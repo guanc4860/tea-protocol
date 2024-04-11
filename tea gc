@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+
+contract MyToken is ERC20 {
+    uint256 public constant MAX_SUPPLY = 1e10 * 1e18; // 100 billion tokens
+    uint256 public constant MAX_MINT_PER_USER = 1e5 * 1e18; // 100,000 tokens
+
+    mapping(address => uint256) private _mintedTokens;
+
+    constructor() ERC20("MyToken", "MTK") {}
+
+    function mint(uint256 amount) external {
+        require(totalSupply() + amount <= MAX_SUPPLY, "Exceeds maximum supply");
+        require(_mintedTokens[msg.sender] + amount <= MAX_MINT_PER_USER, "Exceeds maximum mint per user");
+        
+        _mint(msg.sender, amount);
+        _mintedTokens[msg.sender] += amount;
+    }
+}
